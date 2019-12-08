@@ -1,10 +1,10 @@
-#include<GL/glut.h>
+#include <GL/glut.h>
 #include <cmath>
 #include "OBJParser.h"
 #include "Spider.h"
 
+#define PI 3.14159265359
 
-/* Deklaracije callback funkcija. */
 static void on_keyboard(unsigned char key, int x, int y);
 static void processSpecialKeys(int key, int x, int y);
 static void on_reshape(int width, int height);
@@ -131,6 +131,35 @@ void drawModel(Mesh* mesh) {
    glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices());
 }
 
+void drawSpiderWeb() {
+   glDisable(GL_LIGHTING);
+   glLineWidth(3);
+   glColor3f(1, 1, 1);
+   glBegin(GL_LINES);
+
+   //number of support threads
+   int nsthr = 10;
+   //number of rings
+   int nrng = 8;
+
+   for (int i = 0; i < nsthr; i++) {
+      glVertex3f(0, 0, 0);
+      glVertex3f(3 * sin(i * (3.14 / (nsthr / 2))), 0, 3 * cos(i * (3.14 / (nsthr / 2))));
+
+      for (int j = 1; j <= nrng; j++) {
+         float node1x = (j * 2.8 / nrng) * sin(i * (PI / (nsthr / 2)));
+         float node1z = (j * 2.8 / nrng) * cos(i * (PI / (nsthr / 2)));
+         float node2x = (j * 2.8 / nrng) * sin((i + 1) * (PI / (nsthr / 2)));
+         float node2z = (j * 2.8 / nrng) * cos((i + 1) * (PI / (nsthr / 2)));
+         glVertex3f(node1x, 0, node1z);
+         glVertex3f(node2x, 0, node2z);
+      }
+   }
+
+   glEnd();
+   glEnable(GL_LIGHTING);
+}
+
 static void on_display(void) {
    GLfloat light_position[] = { 0, 24, 24, 1 };
    GLfloat light_direction[] = { 0,-1,-1 };
@@ -180,10 +209,14 @@ static void on_display(void) {
 
    glTranslatef(0, sin(3.14 / 4) * 23, cos(3.14 / 4) * 23);
    glRotatef(rotationYaw, 0, 1, 0);
-   glRotatef(rotationPitch, 1, 0, 0);
+   glRotatef(rotationPitch + 31, 1, 0, 0);
 
-   glScaled(2, 2, 2);
+   glScaled(0.2, 0.2, 0.2);
    drawModel(&spider);
+   glScaled(5, 5, 5);
+
+   glScaled(3, 3, 3);
+   drawSpiderWeb();
 
    glPopMatrix();
 

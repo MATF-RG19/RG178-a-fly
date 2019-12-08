@@ -1,5 +1,11 @@
-﻿  OBJParser.cpp
+﻿  Mesh.cpp
+  Spider.cpp
+D:\Git\Projekat_iz_grafike\RG178-a-fly\VSProject\Projekat_iz_grafike\Spider.cpp(15120,1): warning C4305: 'initializing': truncation from 'double' to 'const float'
+D:\Git\Projekat_iz_grafike\RG178-a-fly\VSProject\Projekat_iz_grafike\Spider.cpp(30237,1): warning C4305: 'initializing': truncation from 'double' to 'const float'
+D:\Git\Projekat_iz_grafike\RG178-a-fly\VSProject\Projekat_iz_grafike\Spider.cpp(45354,1): warning C4305: 'initializing': truncation from 'double' to 'const float'
+  OBJParser.cpp
+D:\Git\Projekat_iz_grafike\RG178-a-fly\VSProject\Projekat_iz_grafike\OBJParser.cpp(131,31): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   Projekat_iz_grafike.cpp
+D:\Git\Projekat_iz_grafike\RG178-a-fly\VSProject\Projekat_iz_grafike\Projekat_iz_grafike.cpp(20,14): warning C4101: 'parser': unreferenced local variable
   Generating Code...
-C:\Projects\C++ Projects\Projekat iz grafike\Projekat_iz_grafike\Projekat_iz_grafike\OBJParser.cpp(129,31): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 LINK : fatal error LNK1104: cannot open file 'glut32.lib'
