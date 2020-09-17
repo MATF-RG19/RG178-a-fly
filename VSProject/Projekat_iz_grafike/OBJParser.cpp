@@ -42,7 +42,7 @@ void OBJParser::extractOBJdata(string fp, float** positions, float** texels, flo
    // Open OBJ file
    ifstream objFile;
    ofstream outputFile;
-   outputFile.open("e:\\Blender files\\Spider\\spider.txt");
+   outputFile.open("e:\\Blender files\\Fly\\fly.txt");
    objFile.open(fp);
    if (!objFile.good()) {
       cout << "ERROR OPENING OBJ FILE" << endl;

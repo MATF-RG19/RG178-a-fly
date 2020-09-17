@@ -151,15 +151,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DrawUtils.cpp" />
+    <ClCompile Include="Fly.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MouseUtils.cpp" />
     <ClCompile Include="Spider.cpp" />
     <ClCompile Include="OBJParser.cpp" />
     <ClCompile Include="Projekat_iz_grafike.cpp" />
+    <ClCompile Include="SpiderWeb.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DrawUtils.h" />
+    <ClInclude Include="Fly.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MouseUtils.h" />
     <ClInclude Include="Spider.h" />
     <ClInclude Include="OBJParser.h" />
+    <ClInclude Include="SpiderWeb.h" />
     <ClInclude Include="Structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
