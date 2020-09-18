@@ -94,8 +94,3 @@ struct WebString {
    Position first, last;
    int health;
 };
-
-struct GraphPosition {
-   Position coords;
-   Position** neighbours;
-};

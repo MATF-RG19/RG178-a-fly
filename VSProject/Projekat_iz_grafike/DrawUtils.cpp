@@ -79,13 +79,13 @@ void DrawUtils::drawModel(Mesh* mesh, GLfloat material[4]) {
 }
 
 void DrawUtils::drawSpider() {
-   glScaled(0.2, 0.2, 0.2);
+   glScaled(0.25, 0.25, 0.25);
    GLclampf spiderMatRed = 20.0 / 255;
    GLclampf spiderMatGreen = 20.0 / 255;
    GLclampf spiderMatBlue = 20.0 / 255;
    GLfloat material_diffuse_spider[] = { spiderMatRed, spiderMatGreen, spiderMatBlue, 1 };
    drawModel(&getSpider(), material_diffuse_spider);
-   glScaled(5, 5, 5);
+   glScaled(4, 4, 4);
 }
 
 void DrawUtils::drawFly(int cursorPosition, Position animationOffset) {
@@ -179,15 +179,22 @@ void DrawUtils::drawLandingSpots(MouseUtils mouseUtils) {
    }
 }
 
-void DrawUtils::drawSpiderSpots() {
-   for (int i = 0; i < getSpiderWeb().getNumOfSpiderSpots(); i++) {
-      GLclampf redMat = 255.0 / 255;
-      GLclampf greenMat = 20.0 / 255;
-      GLclampf blueMat = 20.0 / 255;
-
-      glTranslatef(getSpiderWeb().getSpiderSpots()[i].coords.x, getSpiderWeb().getSpiderSpots()[i].coords.y, getSpiderWeb().getSpiderSpots()[i].coords.z);
-      GLfloat materialDiffuse[] = { redMat, greenMat, blueMat, 1 };
-      drawSphere(0.025, 8, 8, materialDiffuse);
-      glTranslatef(-getSpiderWeb().getSpiderSpots()[i].coords.x, -getSpiderWeb().getSpiderSpots()[i].coords.y, -getSpiderWeb().getSpiderSpots()[i].coords.z);
+void DrawUtils::drawText(const char* text, int length, int x, int y) {
+   glMatrixMode(GL_PROJECTION);
+   double* matrix = new double[16];
+   glGetDoublev(GL_PROJECTION_MATRIX, matrix);
+   glLoadIdentity();
+   glOrtho(0, 1900, 0, 1000, -5, 5);
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
+   glPushMatrix();
+   glLoadIdentity();
+   glRasterPos2d(x, y);
+   for (int i = 0; i < length; i++) {
+      glutBitmapCharacter(GLUT_BITMAP_9_BY_15, (int)text[i]);
    }
+   glPopMatrix();
+   glMatrixMode(GL_PROJECTION);
+   glLoadMatrixd(matrix);
+   glMatrixMode(GL_MODELVIEW);
 }

@@ -21,26 +21,41 @@ DrawUtils drawUtils;
 MouseUtils mouseUtils;
 int windowWidth = 1900;
 int windowHeight = 1000;
+
+//Position of the clicked landing spot
 int cursorPosition;
 
 //Vector from the current position of the fly to the position marked with the mouse
 Position animationOffset;
-Position animationOffsetInitial;
-float animationOffsetLen;
 //Vector perpendicular to the spider web plain
 Position animationOffsetUp;
-float animationOffsetUpLen;
 //Step for the movement on the spider web plain
 Position dAnimationOffset;
 //Step for the movement above the spider web plain
 Position dAnimationOffsetUp;
 
-bool animationActive;
+
+//Current position of the spider
+Position spiderPosition;
+//Vector from the spider to the fly
+Position spiderOffset;
+//Step for the spider movement
+Position dSpiderOffset;
+
+
+//If true, objects on the scene should be moving
+bool flyAnimationActive, spiderAnimationActive;
 
 //Mouse screen position
 double mouseX, mouseY;
 
+//Number of web stings destroyed
+int score;
 
+//If true, the game is over
+bool gameOver;
+
+//Calculates the vector between two landing spots and sets the flight speed for the fly
 void calculateAnimationOffset(int startPosition, int endPosition) {
    Position start;
    if ((startPosition / spiderWeb.getNumOfStrings()) % 2 == 0) {
@@ -73,19 +88,22 @@ void calculateAnimationOffset(int startPosition, int endPosition) {
    dAnimationOffset = animationOffset / 150.0f;
    animationOffsetUp = Position();
    dAnimationOffsetUp = Position(0.0f, 0.015f, 0.0f);
-   printf("%f %f %f\n", animationOffset.x, animationOffset.y, animationOffset.z);
-   printf("%f %f %f\n\n", dAnimationOffset.x, dAnimationOffset.y, dAnimationOffset.z);
+
+   spiderOffset = spiderPosition - end;
+   dSpiderOffset = (spiderOffset / sqrt(spiderOffset * spiderOffset)) / 200.0f;
 }
 
 int main(int argc, char** argv) {
    spider = Spider();
    fly = Fly();
    spiderWeb = SpiderWeb();
+   spiderPosition = Position();
 
-   animationActive = false;
+   flyAnimationActive = false;
+   spiderAnimationActive = false;
 
-   OBJParser parser;
-   /*parser.generateFiles("d:\\Blender files\\Fly\\fly", "Fly");
+   /*OBJParser parser;
+   parser.generateFiles("d:\\Blender files\\Fly\\fly", "Fly");
    exit(0);*/
 
    /* Ambient light color. */
@@ -135,9 +153,14 @@ int main(int argc, char** argv) {
 
    spiderWeb.createSpiderWeb(10, 8);
 
+   cursorPosition = rand() % spiderWeb.getNumOfLandingSpots();
+
    drawUtils = DrawUtils(&spiderWeb, &spider, &fly);
 
    mouseUtils = MouseUtils(&mouseX, &mouseY);
+
+   score = 0;
+   gameOver = false;
 
    glutMainLoop();
 
@@ -145,16 +168,40 @@ int main(int argc, char** argv) {
 }
 
 static void on_keyboard(unsigned char key, int x, int y) {
+   int previousPosition;
    switch (key) {
    case 27:
       spiderWeb.freeMemory();
       exit(0);
       break;
+   case 32:
+      if (!flyAnimationActive && !gameOver) {
+         previousPosition = cursorPosition;
+         cursorPosition = drawUtils.getLandingPosition();
+         if (cursorPosition != previousPosition) {
+            calculateAnimationOffset(previousPosition, cursorPosition);
+            if ((previousPosition / spiderWeb.getNumOfStrings()) % 2 == 0) {
+               int tmpPos = ((previousPosition / spiderWeb.getNumOfStrings()) / 2) * spiderWeb.getNumOfStrings() + previousPosition % spiderWeb.getNumOfStrings();
+               spiderWeb.getStrongStrings()[tmpPos].health--;
+               if (spiderWeb.getStrongStrings()[tmpPos].health == 0)
+                  score += 2;
+            }
+            else {
+               int tmpPos = ((previousPosition / spiderWeb.getNumOfStrings()) / 2) * spiderWeb.getNumOfStrings() + previousPosition % spiderWeb.getNumOfStrings();
+               spiderWeb.getWeakStrings()[tmpPos].health--;
+               score++;
+            }
+            flyAnimationActive = true;
+            if (!spiderAnimationActive)
+               glutTimerFunc(10, on_timer, 0);
+         }
+      }
+      break;
    }
 }
 
 static void on_mouse_click(int button, int state, int x, int y) {
-   if (state != GLUT_DOWN)
+   if (state != GLUT_DOWN or gameOver)
       return;
 
    windowWidth = glutGet(GLUT_WINDOW_WIDTH);
@@ -174,39 +221,7 @@ static void on_mouse_click(int button, int state, int x, int y) {
 }
 
 static void on_special_keys(int key, int x, int y) {
-   int previousPosition;
    switch (key) {
-   case GLUT_KEY_LEFT:
-      if (!animationActive) {
-         previousPosition = cursorPosition;
-         cursorPosition--;
-         if (cursorPosition == -1) {
-            cursorPosition = 2 * spiderWeb.getNumOfStrings() * spiderWeb.getNumOfRings() - 1;
-         }
-         calculateAnimationOffset(previousPosition, cursorPosition);
-         animationActive = true;
-         glutTimerFunc(10, on_timer, 0);
-      }
-      break;
-   case GLUT_KEY_RIGHT:
-      if (!animationActive) {
-         previousPosition = cursorPosition;
-         cursorPosition = drawUtils.getLandingPosition();
-         if (cursorPosition != previousPosition) {
-            calculateAnimationOffset(previousPosition, cursorPosition);
-            if ((previousPosition / spiderWeb.getNumOfStrings()) % 2 == 0) {
-               int tmpPos = ((previousPosition / spiderWeb.getNumOfStrings()) / 2) * spiderWeb.getNumOfStrings() + previousPosition % spiderWeb.getNumOfStrings();
-               spiderWeb.getStrongStrings()[tmpPos].health--;
-            }
-            else {
-               int tmpPos = ((previousPosition / spiderWeb.getNumOfStrings()) / 2) * spiderWeb.getNumOfStrings() + previousPosition % spiderWeb.getNumOfStrings();
-               spiderWeb.getWeakStrings()[tmpPos].health--;
-            }
-            animationActive = true;
-            glutTimerFunc(10, on_timer, 0);
-         }
-      }
-      break;
    case GLUT_KEY_UP:
       rotationPitch += step;
       glutPostRedisplay();
@@ -223,17 +238,27 @@ static void on_timer(int value) {
    if (value != 0)
       return;
 
-   if (animationActive) {
+   if (flyAnimationActive) {
       animationOffset = animationOffset - dAnimationOffset + dAnimationOffsetUp;
       dAnimationOffsetUp.y -= 0.0002f;
    }
 
    if (fabs(animationOffset.x) <= 0.0001 && fabs(animationOffset.z) <= 0.0001) {
-      animationActive = false;
+      flyAnimationActive = false;
       animationOffset = Position();
    }
 
-   if (animationActive)
+   if (spiderOffset * spiderOffset > 0.0001) {
+      spiderOffset = spiderOffset - dSpiderOffset;
+      spiderPosition = spiderPosition - dSpiderOffset;
+      spiderAnimationActive = true;
+   }
+   else {
+      spiderAnimationActive = false;
+      gameOver = true;
+   }
+
+   if (flyAnimationActive || spiderAnimationActive)
       glutTimerFunc(10, on_timer, 0);
 
    glutPostRedisplay();
@@ -258,6 +283,18 @@ void setUpLight() {
    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_direction);
 }
 
+float calculateAngle(const Position A, const Position B) {
+   if (A * A == 0 || B * B == 0) {
+      return 0;
+   }
+   Position normA = (A / sqrt(A * A));
+   Position normB = (B / sqrt(B * B));
+   if (normB.x < 0.0f)
+      return acos(normA * normB) * 180.0f / PI;
+   else
+      return 360.0f - (acos(normA * normB) * 180.0f / PI);
+}
+
 static void on_display(void) {
    GLclampf bRed = 47.0 / 255;
    GLclampf bGreen = 216.0 / 255;
@@ -278,16 +315,33 @@ static void on_display(void) {
    drawUtils.drawSphere(22, 256, 256, materialDiffuse);
 
    glTranslatef(0, sin(3.14 / 4) * 23, cos(3.14 / 4) * 23);
-   glRotatef(rotationYaw, 0, 1, 0);
-   glRotatef(rotationPitch + 31, 1, 0, 0);
+   glRotatef(31, 1, 0, 0);
+
+   glTranslatef(spiderPosition.x * 3, spiderPosition.y * 3, spiderPosition.z * 3);
+   float angle = calculateAngle(Position(0, 0, 1), dSpiderOffset);
+   glRotatef(180.0f - angle, 0, 1, 0);
    drawUtils.drawSpider();
+   glRotatef(angle - 180.0f, 0, 1, 0);
+   glTranslatef(-spiderPosition.x * 3, -spiderPosition.y * 3, -spiderPosition.z * 3);
 
    glScaled(3, 3, 3);
    drawUtils.drawFly(cursorPosition, animationOffset);
    drawUtils.drawSpiderWeb();
    mouseUtils.calculateRay();
    drawUtils.drawLandingSpots(mouseUtils);
-   drawUtils.drawSpiderSpots();
+
+   string text = "SCORE:";
+   drawUtils.drawText(text.data(), text.size(), 50, 950);
+
+   string points = to_string(score);
+   drawUtils.drawText(points.data(), points.size(), 110, 950);
+
+   if (gameOver) {
+      glColor3f(1, 0, 0);
+      string text = "GAME OVER";
+      drawUtils.drawText(text.data(), text.size(), 910, 950);
+   }
+
 
    glPopMatrix();
 

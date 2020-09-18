@@ -25,6 +25,6 @@ public:
    void drawFly(int cursorPosition, Position animationOffset);
    void drawSphere(float size, int slices, int stacks, GLfloat materialDiffuse[4]);
    void drawLandingSpots(MouseUtils mouseUtils);
-   void drawSpiderSpots();
+   void drawText(const char* text, int length, int x, int y);
 };
 

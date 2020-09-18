@@ -57,7 +57,6 @@ void SpiderWeb::createSpiderWeb(int numOfRings, int numOfStrings) {
    delete[] positions;
 
    createLandingSpots();
-   createSpiderSpots();
 }
 
 void SpiderWeb::createLandingSpots() {
@@ -85,14 +84,6 @@ void SpiderWeb::createLandingSpots() {
    }
 }
 
-void SpiderWeb::createSpiderSpots() {
-   this->spiderSpots = new GraphPosition[getNumOfSpiderSpots()];
-   spiderSpots[0].coords = Position();
-   for (int i = 0; i < getNumOfSpiderSpots() - 1; i++) {
-      spiderSpots[i + 1].coords = getStrongStrings()[i].last;
-   }
-}
-
 WebString* SpiderWeb::getStrongStrings() {
    return this->strongStrings;
 }
@@ -113,21 +104,12 @@ Position* SpiderWeb::getLandingSpots() {
    return this->landingSpots;
 }
 
-GraphPosition* SpiderWeb::getSpiderSpots() {
-   return this->spiderSpots;
-}
-
 int SpiderWeb::getNumOfLandingSpots() {
    return 2 * getNumOfStrings() * getNumOfRings();
-}
-
-int SpiderWeb::getNumOfSpiderSpots() {
-   return getNumOfStrings() * getNumOfRings() + 1;
 }
 
 void SpiderWeb::freeMemory() {
    delete[] strongStrings;
    delete[] weakStrings;
    delete[] landingSpots;
-   delete[] spiderSpots;
 }

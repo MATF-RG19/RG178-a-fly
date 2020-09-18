@@ -170,6 +170,9 @@
     <ClInclude Include="SpiderWeb.h" />
     <ClInclude Include="Structs.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Projekat_iz_grafike1.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

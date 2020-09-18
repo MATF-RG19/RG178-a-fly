@@ -16,19 +16,15 @@ private:
    WebString* strongStrings;
    WebString* weakStrings;
    Position* landingSpots;
-   GraphPosition* spiderSpots;
 public:
    WebString* getStrongStrings();
    WebString* getWeakStrings();
    int getNumOfRings();
    int getNumOfStrings();
    Position* getLandingSpots();
-   GraphPosition* getSpiderSpots();
    int getNumOfLandingSpots();
-   int getNumOfSpiderSpots();
    void createSpiderWeb(int numOfRings, int numOfStrings);
    void createLandingSpots();
-   void createSpiderSpots();
    void freeMemory();
 };
 
