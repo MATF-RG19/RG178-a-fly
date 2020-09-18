@@ -84,7 +84,7 @@ void DrawUtils::drawSpider() {
    GLclampf spiderMatGreen = 20.0 / 255;
    GLclampf spiderMatBlue = 20.0 / 255;
    GLfloat material_diffuse_spider[] = { spiderMatRed, spiderMatGreen, spiderMatBlue, 1 };
-   drawModel(&getSpider(), material_diffuse_spider);
+   drawModel(spider, material_diffuse_spider);
    glScaled(4, 4, 4);
 }
 
@@ -110,7 +110,7 @@ void DrawUtils::drawFly(int cursorPosition, Position animationOffset) {
    GLclampf flyMatGreen = 5.0 / 255;
    GLclampf flyMatBlue = 5.0 / 255;
    GLfloat material_diffuse_fly[] = { flyMatRed, flyMatGreen, flyMatBlue, 1 };
-   drawModel(&getFly(), material_diffuse_fly);
+   drawModel(fly, material_diffuse_fly);
    glScaled(50, 50, 50);
    glTranslatef(-position.x, -position.y, -position.z);
 }
